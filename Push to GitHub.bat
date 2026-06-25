@@ -60,12 +60,8 @@ echo.
 if exist .git\config (
   findstr /C:"[remote \"origin\"]" .git\config >nul 2>&1
   if errorlevel 1 (
-    echo No GitHub remote set yet.
-    echo.
-    set /p REPO_URL=Paste your GitHub repo URL ^(e.g. https://github.com/you/the-hobbit-syars.git^): 
-    if not "!REPO_URL!"=="" (
-      "%GIT%" remote add origin "!REPO_URL!"
-    )
+    echo Adding GitHub remote...
+    "%GIT%" remote add origin "https://github.com/codingunlv4/the-hobbit-stars.git"
   )
 )
 
