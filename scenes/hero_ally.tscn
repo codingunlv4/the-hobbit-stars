@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://hero_ally_scene"]
+
+[ext_resource type="Script" path="res://scripts/hero_ally.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/character_visual.gd" id="2"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.38
+height = 1.78
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+inner_radius = 0.55
+outer_radius = 0.7
+rings = 16
+ring_segments = 8
+
+[node name="HeroAlly" type="CharacterBody3D"]
+script = ExtResource("1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.89, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+visible = false
+
+[node name="CharacterVisual" type="Node3D" parent="."]
+script = ExtResource("2")
+
+[node name="SelectionRing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+visible = false
+mesh = SubResource("TorusMesh_ring")
+
+[node name="CommandMarker" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 1.85, 0)
+mesh = SubResource("TorusMesh_ring")
