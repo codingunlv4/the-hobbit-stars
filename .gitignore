@@ -1,0 +1,17 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+*.import
+
+# Local tools (Godot portable — too large for GitHub)
+tools/godot/
+tools/git/
+
+# Local logs
+game.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
