@@ -48,6 +48,7 @@ func _ready() -> void:
 	$Title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	$HBox.mouse_filter = Control.MOUSE_FILTER_STOP
 	_setup_preview_floor()
+	_setup_preview_camera()
 	if preview_camera:
 		preview_camera.current = true
 	sub_viewport_container.visible = true
@@ -72,21 +73,50 @@ func _ready() -> void:
 
 
 func _deferred_startup() -> void:
-	_show_knight_preview()
 	_refresh_preview()
 	_update_hero_description()
 	_update_partner_status()
 
 
-func _show_knight_preview() -> void:
-	sub_viewport_container.visible = true
-	preview_label.text = "Knight — your hero in battle"
-	GlbVisualScript.hide_procedural(preview_visual)
-	GlbVisualScript.attach(preview_visual, GlbVisualScript.KNIGHT, 1.0, 0.0, 180.0)
-	partner_visual.visible = false
-	var dragon_preview := GlbVisualScript.attach(preview_pivot, GlbVisualScript.DRAGON, 0.28, 0.4, 180.0)
-	if dragon_preview:
-		dragon_preview.position.x = 2.2
+func _setup_preview_camera() -> void:
+	if not preview_camera:
+		return
+	preview_camera.position = Vector3(0, 1.2, 5.4)
+	preview_camera.rotation_degrees = Vector3(-14, 0, 0)
+	preview_camera.fov = 50.0
+
+
+func _clear_glb_model(node: Node3D) -> void:
+	var glb := node.get_node_or_null("GlbModel")
+	if glb:
+		glb.queue_free()
+
+
+func _clear_preview_models() -> void:
+	for node in [preview_pivot, preview_visual, partner_visual]:
+		_clear_glb_model(node)
+	preview_visual.visible = true
+
+
+func _refresh_3d_preview() -> void:
+	_clear_preview_models()
+	preview_visual.position.x = -1.0
+	partner_visual.position.x = 1.0
+
+	if not _selected_hero_id.is_empty() and HeroPresets.HEROES.has(_selected_hero_id):
+		preview_visual.apply_appearance(HeroPresets.build_appearance(_selected_hero_id), true)
+	elif _selected_hero_id.is_empty():
+		preview_visual.apply_appearance(_appearance, true)
+	else:
+		preview_visual.visible = false
+		GlbVisualScript.attach(preview_visual, GlbVisualScript.KNIGHT, 0.82, 0.0, 180.0)
+
+	if not _selected_partner_id.is_empty() and HeroPresets.HEROES.has(_selected_partner_id):
+		partner_visual.visible = true
+		partner_visual.apply_appearance(HeroPresets.build_appearance(_selected_partner_id), true)
+	else:
+		partner_visual.visible = true
+		GlbVisualScript.attach(partner_visual, GlbVisualScript.DRAGON, 0.2, 0.32, 180.0)
 
 
 func _setup_action_buttons() -> void:
@@ -134,8 +164,8 @@ func _flash_selection(message: String) -> void:
 
 func _setup_preview_floor() -> void:
 	var mesh := CylinderMesh.new()
-	mesh.top_radius = 1.1
-	mesh.bottom_radius = 1.1
+	mesh.top_radius = 1.45
+	mesh.bottom_radius = 1.45
 	mesh.height = 0.08
 	preview_floor.mesh = mesh
 	var mat := StandardMaterial3D.new()
@@ -268,30 +298,22 @@ func _populate_swatches(container: HBoxContainer, colors: Array[Color], callback
 
 
 func _refresh_preview(full := true) -> void:
-	if full and sub_viewport_container.visible:
-		preview_visual.apply_appearance(_appearance, true)
-		_flash_selection("Previewing: %s" % _appearance.player_name)
+	if sub_viewport_container.visible:
+		_refresh_3d_preview()
+		if full:
+			_flash_selection("Previewing: %s" % _appearance.player_name)
 	if full:
 		_update_toggle_states(gender_buttons, _appearance.gender)
 		_update_toggle_states(body_buttons, _appearance.body_type)
 		_update_toggle_states(helmet_buttons, _appearance.helmet_style)
 		_update_toggle_states(weapon_buttons, _appearance.weapon_style)
-	_refresh_partner_preview()
 	_update_hero_description()
 	_update_partner_status()
 
 
-func _refresh_partner_preview() -> void:
-	if _selected_partner_id.is_empty() or not sub_viewport_container.visible:
-		partner_visual.visible = false
-		return
-	partner_visual.visible = true
-	partner_visual.apply_appearance(HeroPresets.build_appearance(_selected_partner_id), true)
-
-
 func _update_partner_status() -> void:
 	if _selected_partner_id.is_empty():
-		partner_status.text = "Selected partner: none (pick one below)"
+		partner_status.text = "Selected partner: Dragon (default co-leader)"
 		partner_status.add_theme_color_override("font_color", Color(0.75, 0.78, 0.85))
 	else:
 		partner_status.text = "Selected partner: %s — %s" % [

@@ -120,18 +120,18 @@ light_energy = 0.45
 [node name="PreviewRoot" type="Node3D" parent="HBox/PreviewPanel/Margin/VBox/SubViewportContainer/SubViewport" unique_id=229800117]
 
 [node name="Camera3D" type="Camera3D" parent="HBox/PreviewPanel/Margin/VBox/SubViewportContainer/SubViewport/PreviewRoot" unique_id=779229230]
-transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0.95, 3.8)
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 1.2, 5.4)
 current = true
-fov = 38.0
+fov = 50.0
 
 [node name="PreviewPivot" type="Node3D" parent="HBox/PreviewPanel/Margin/VBox/SubViewportContainer/SubViewport/PreviewRoot" unique_id=1577858301]
 
 [node name="CharacterVisual" type="Node3D" parent="HBox/PreviewPanel/Margin/VBox/SubViewportContainer/SubViewport/PreviewRoot/PreviewPivot" unique_id=1642777629]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
 script = ExtResource("2")
 
 [node name="PartnerVisual" type="Node3D" parent="HBox/PreviewPanel/Margin/VBox/SubViewportContainer/SubViewport/PreviewRoot/PreviewPivot" unique_id=633404208]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
 visible = false
 script = ExtResource("2")
 
