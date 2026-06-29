@@ -477,9 +477,9 @@ func _on_begin_pressed() -> void:
 	quick_join_button.disabled = true
 	_appearance.player_name = name_input.text.strip_edges()
 	if _appearance.player_name.is_empty():
-		_appearance.player_name = "Knight"
-	_appearance.hero_preset_id = "knight"
-	_appearance.partner_hero_preset_id = "dragon"
+		_appearance.player_name = "Hero"
+	_appearance.hero_preset_id = _selected_hero_id
+	_appearance.partner_hero_preset_id = _selected_partner_id
 	PlayerData.set_appearance(_appearance)
 	var err := get_tree().change_scene_to_file(MAIN_SCENE)
 	if err != OK:

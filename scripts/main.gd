@@ -24,11 +24,11 @@ const STARTING_GUARD_POSITIONS: Array[Vector3] = [
 
 func _ready() -> void:
 	_setup_fallback_camera()
-	_apply_knight_hero()
+	_apply_player_hero()
 	CommandSystem.register_commander(commander)
 	commander.fighter_defeated.connect(_on_commander_defeated)
 	_setup_battlefield()
-	_spawn_dragon_ally()
+	_spawn_partner_ally()
 	_spawn_starting_guards()
 
 
@@ -50,19 +50,24 @@ func _on_commander_defeated() -> void:
 		cam.current = true
 
 
-func _apply_knight_hero() -> void:
-	commander.apply_glb_model(GlbVisual.KNIGHT, KNIGHT_SCALE, KNIGHT_Y_OFFSET, "Knight")
-	commander.max_health = 160.0
+func _apply_player_hero() -> void:
+	var app := PlayerData.appearance
+	var hero_id := app.hero_preset_id
+	if not hero_id.is_empty() and HeroPresets.HEROES.has(hero_id):
+		commander.apply_appearance(HeroPresets.build_appearance(hero_id))
+	else:
+		var display := app.player_name.strip_edges()
+		if display.is_empty() or display == "Hero":
+			display = "Knight"
+		commander.apply_glb_model(GlbVisual.KNIGHT, KNIGHT_SCALE, KNIGHT_Y_OFFSET, display)
+	commander.apply_hero_stats()
 	commander.health = commander.max_health
-	commander.move_speed = 5.5
-	commander.light_damage = 22.0
-	commander.heavy_damage = 36.0
 	commander.health_changed.emit(commander.health, commander.max_health)
 
 
 func _setup_battlefield() -> void:
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.2, 0.34, 0.16)
+	mat.albedo_color = Color(0.12, 0.18, 0.14)
 	ground.material_override = mat
 	_setup_ground_collision()
 	_brighten_world()
@@ -76,10 +81,10 @@ func _brighten_world() -> void:
 	var sky := world_env.environment.sky if world_env and world_env.environment else null
 	if sky and sky.sky_material is ProceduralSkyMaterial:
 		var proc_sky: ProceduralSkyMaterial = sky.sky_material
-		proc_sky.sky_top_color = Color(0.35, 0.55, 0.9)
-		proc_sky.sky_horizon_color = Color(0.65, 0.78, 0.95)
-		proc_sky.ground_horizon_color = Color(0.25, 0.38, 0.18)
-		proc_sky.ground_bottom_color = Color(0.12, 0.2, 0.1)
+		proc_sky.sky_top_color = Color(0.08, 0.1, 0.22)
+		proc_sky.sky_horizon_color = Color(0.25, 0.2, 0.35)
+		proc_sky.ground_horizon_color = Color(0.15, 0.18, 0.12)
+		proc_sky.ground_bottom_color = Color(0.06, 0.08, 0.06)
 
 
 func _setup_ground_collision() -> void:
@@ -97,6 +102,20 @@ func _setup_ground_collision() -> void:
 	body.add_child(shape)
 	add_child(body)
 	body.owner = owner if owner else self
+
+
+func _spawn_partner_ally() -> void:
+	var partner_id := PlayerData.appearance.partner_hero_preset_id
+	if not partner_id.is_empty() and HeroPresets.HEROES.has(partner_id):
+		var ally: HeroAlly = HERO_ALLY_SCENE.instantiate()
+		ally.hero_preset_id = partner_id
+		ally.is_co_leader = true
+		ally.set_follow_offset(Vector3(-2.8, 0.0, -1.2))
+		allies.add_child(ally)
+		ally.global_position = commander.global_position + Vector3(-2.8, 0, -1.2)
+		CommandSystem.register_unit(ally)
+		return
+	_spawn_dragon_ally()
 
 
 func _spawn_dragon_ally() -> void:
