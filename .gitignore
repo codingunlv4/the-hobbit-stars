@@ -3,12 +3,17 @@
 /android/
 *.import
 
-# Local tools (Godot portable — too large for GitHub)
+# Local tools (portable Godot/Git — too large for GitHub)
 tools/godot/
 tools/git/
+tools/gh-extract/
+tools/*.zip
 
 # Local logs
 game.log
+
+# Exported builds
+build/
 
 # OS / editor
 .DS_Store

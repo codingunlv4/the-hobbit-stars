@@ -1,6 +1,6 @@
 @echo off
 cd /d "%~dp0"
-set "GODOT=%~dp0tools\godot\Godot_v4.3-stable_win64.exe"
+set "GODOT=%~dp0tools\godot\Godot_v4.7-stable_win64.exe"
 if not exist "%GODOT%" (
   echo.
   echo ERROR: Godot engine not found at:
